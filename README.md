@@ -31,3 +31,14 @@ If you want to run the project on a local server for development purposes:
    ```bash
    npm install -g http-server
 
+### Deployed Link
+[Click here to visit the project demo](https://arvrminiproject.vercel.app/)
+
+
+### Libraries and Tools Used
+   -Three.js: JavaScript 3D rendering library.
+
+   -HTML, CSS, and JavaScript: For building the front-end of the project.
+
+
+
