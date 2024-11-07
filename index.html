@@ -1,331 +1,813 @@
 <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Three JS Molecules</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+<head>
+  <title>Chemical Compound Visualizer</title>
+  <style>
+    body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+#container {
+    width: 100%;
+    height: 100%;
+}
 
-        <script type="importmap">
-            {
-                "imports": {
-                    "three": "./js/three.module.js",
-                    "OrbitControls": "./js/OrbitControls.js"
-                }
+.periodic-table-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
+    padding: 10px;
+    border-radius: 5px;
+    color: #ffffff;  /* White text for readability */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Subtle shadow for depth */
+    z-index: 1000;
+}
+
+#periodic-table {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
+    padding: 10px;
+    border-radius: 5px;
+    color: #ffffff;  /* White text */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Subtle shadow for depth */
+    z-index: 1000;
+}
+
+.controls-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    gap: 10px;
+    color: #ffffff;  /* White text for readability */
+}
+
+.button {
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.button:hover {
+    background: #45a049;
+}
+
+.periodic-table-row {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 2px;
+    justify-content: flex-start;
+}
+
+.periodic-table-element {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);  /* Light background */
+    color: #ffffff;  /* White text */
+    border: 1px solid rgba(255, 255, 255, 0.2);  /* Light border */
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    transition: background 0.3s, transform 0.2s ease;
+}
+
+.periodic-table-element:hover {
+    background: rgba(255, 255, 255, 0.5);  /* Slightly lighter on hover */
+    transform: scale(1.05);                /* Subtle scale effect */
+}
+
+.periodic-table-element:empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+#message {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="controls-container">
+    <button id="bondButton" class="button">Bond</button>
+    <button id="clearButton" class="button">Clear</button>
+    <button id="arButton" class="button">AR Mode</button>
+  </div>
+  <div id="message"></div>
+  <div id="periodic-table">
+<div id="periodic-table">
+  <!-- Row 1 -->
+  <div class="periodic-table-row">
+    <div class="periodic-table-element" data-element="H">H</div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element" data-element="He">He</div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="periodic-table-row">
+    <div class="periodic-table-element" data-element="Li">Li</div>
+    <div class="periodic-table-element" data-element="Be">Be</div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element" data-element="B">B</div>
+    <div class="periodic-table-element" data-element="C">C</div>
+    <div class="periodic-table-element" data-element="N">N</div>
+    <div class="periodic-table-element" data-element="O">O</div>
+    <div class="periodic-table-element" data-element="F">F</div>
+    <div class="periodic-table-element" data-element="Ne">Ne</div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="periodic-table-row">
+    <div class="periodic-table-element" data-element="Na">Na</div>
+    <div class="periodic-table-element" data-element="Mg">Mg</div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element"></div>
+    <div class="periodic-table-element" data-element="Al">Al</div>
+    <div class="periodic-table-element" data-element="Si">Si</div>
+    <div class="periodic-table-element" data-element="P">P</div>
+    <div class="periodic-table-element" data-element="S">S</div>
+    <div class="periodic-table-element" data-element="Cl">Cl</div>
+    <div class="periodic-table-element" data-element="Ar">Ar</div>
+  </div>
+
+  <!-- Row 4 -->
+  <div class="periodic-table-row">
+    <div class="periodic-table-element" data-element="K">K</div>
+    <div class="periodic-table-element" data-element="Ca">Ca</div>
+    <div class="periodic-table-element" data-element="Sc">Sc</div>
+    <div class="periodic-table-element" data-element="Ti">Ti</div>
+    <div class="periodic-table-element" data-element="V">V</div>
+    <div class="periodic-table-element" data-element="Cr">Cr</div>
+    <div class="periodic-table-element" data-element="Mn">Mn</div>
+    <div class="periodic-table-element" data-element="Fe">Fe</div>
+    <div class="periodic-table-element" data-element="Co">Co</div>
+    <div class="periodic-table-element" data-element="Ni">Ni</div>
+    <div class="periodic-table-element" data-element="Cu">Cu</div>
+    <div class="periodic-table-element" data-element="Zn">Zn</div>
+    <div class="periodic-table-element" data-element="Ga">Ga</div>
+    <div class="periodic-table-element" data-element="Ge">Ge</div>
+    <div class="periodic-table-element" data-element="As">As</div>
+    <div class="periodic-table-element" data-element="Se">Se</div>
+    <div class="periodic-table-element" data-element="Br">Br</div>
+    <div class="periodic-table-element" data-element="Kr">Kr</div>
+  </div>
+  
+  <!-- Add more rows as needed for the complete periodic table -->
+</div>
+
+  </div>
+
+  <script async src="https://unpkg.com/es-module-shims/dist/es-module-shims.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    // Define valid compounds and their bonding information
+    const validCompounds = {
+    'H2O': {
+        atoms: ['H', 'H', 'O'],
+        bonds: [
+        { from: 1, to: 0, pairs: 1 },
+        { from: 1, to: 2, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(-1, 0, 0),  // H
+        new THREE.Vector3(1, 0, 0),   // H
+        new THREE.Vector3(0, 1, 0)    // O
+        ]
+    },
+    'CO2': {
+        atoms: ['C', 'O', 'O'],
+        bonds: [
+        { from: 0, to: 1, pairs: 2 },
+        { from: 0, to: 2, pairs: 2 }
+        ],
+        positions: [
+        new THREE.Vector3(0, 0, 0),    // C
+        new THREE.Vector3(-1.5, 0, 0), // O
+        new THREE.Vector3(1.5, 0, 0)   // O
+        ]
+    },
+    'NH3': {
+        atoms: ['N', 'H', 'H', 'H'],
+        bonds: [
+        { from: 0, to: 1, pairs: 1 },
+        { from: 0, to: 2, pairs: 1 },
+        { from: 0, to: 3, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(0, 0, 0),     // N
+        new THREE.Vector3(-1, -1, 0),   // H
+        new THREE.Vector3(1, -1, 0),    // H
+        new THREE.Vector3(0, 1, 0)      // H
+        ]
+    },
+    'CH4': {  // Methane
+        atoms: ['C', 'H', 'H', 'H', 'H'],
+        bonds: [
+        { from: 0, to: 1, pairs: 1 },
+        { from: 0, to: 2, pairs: 1 },
+        { from: 0, to: 3, pairs: 1 },
+        { from: 0, to: 4, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(0, 0, 0),    // C
+        new THREE.Vector3(1, 1, 1),    // H
+        new THREE.Vector3(-1, -1, 1),  // H
+        new THREE.Vector3(1, -1, -1),  // H
+        new THREE.Vector3(-1, 1, -1)   // H
+        ]
+    },
+    'O2': {  // Oxygen gas
+        atoms: ['O', 'O'],
+        bonds: [
+        { from: 0, to: 1, pairs: 2 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.6, 0, 0), // O
+        new THREE.Vector3(0.6, 0, 0)   // O
+        ]
+    },
+    'N2': {  // Nitrogen gas
+        atoms: ['N', 'N'],
+        bonds: [
+        { from: 0, to: 1, pairs: 3 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.6, 0, 0), // N
+        new THREE.Vector3(0.6, 0, 0)   // N
+        ]
+    },
+    'H2': {  // Hydrogen gas
+        atoms: ['H', 'H'],
+        bonds: [
+        { from: 0, to: 1, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.4, 0, 0), // H
+        new THREE.Vector3(0.4, 0, 0)   // H
+        ]
+    },
+    'C2H4': {  // Ethylene
+        atoms: ['C', 'C', 'H', 'H', 'H', 'H'],
+        bonds: [
+        { from: 0, to: 1, pairs: 2 },
+        { from: 0, to: 2, pairs: 1 },
+        { from: 0, to: 3, pairs: 1 },
+        { from: 1, to: 4, pairs: 1 },
+        { from: 1, to: 5, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.7, 0, 0),    // C
+        new THREE.Vector3(0.7, 0, 0),     // C
+        new THREE.Vector3(-1.5, 0.8, 0),  // H
+        new THREE.Vector3(-1.5, -0.8, 0), // H
+        new THREE.Vector3(1.5, 0.8, 0),   // H
+        new THREE.Vector3(1.5, -0.8, 0)   // H
+        ]
+    },
+    'C2H6': {  // Ethane
+        atoms: ['C', 'C', 'H', 'H', 'H', 'H', 'H', 'H'],
+        bonds: [
+        { from: 0, to: 1, pairs: 1 },
+        { from: 0, to: 2, pairs: 1 },
+        { from: 0, to: 3, pairs: 1 },
+        { from: 0, to: 4, pairs: 1 },
+        { from: 1, to: 5, pairs: 1 },
+        { from: 1, to: 6, pairs: 1 },
+        { from: 1, to: 7, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.7, 0, 0),    // C
+        new THREE.Vector3(0.7, 0, 0),     // C
+        new THREE.Vector3(-1.5, 0.8, 0),  // H
+        new THREE.Vector3(-1.5, -0.8, 0), // H
+        new THREE.Vector3(-0.7, 1, 0),    // H
+        new THREE.Vector3(1.5, 0.8, 0),   // H
+        new THREE.Vector3(1.5, -0.8, 0),  // H
+        new THREE.Vector3(0.7, -1, 0)     // H
+        ]
+    },
+    'HCl': {  // Hydrogen chloride
+        atoms: ['H', 'Cl'],
+        bonds: [
+        { from: 0, to: 1, pairs: 1 }
+        ],
+        positions: [
+        new THREE.Vector3(-0.4, 0, 0), // H
+        new THREE.Vector3(0.6, 0, 0)   // Cl
+        ]
+    },
+    'NaCl': {  // Sodium chloride (ionic bond representation)
+        atoms: ['Na', 'Cl'],
+        bonds: [],  // Typically no covalent bonds for ionic compounds
+        positions: [
+        new THREE.Vector3(-0.5, 0, 0), // Na
+        new THREE.Vector3(0.5, 0, 0)   // Cl
+        ]
+    }
+    };
+
+
+    // Periodic table data
+    const PeriodicTableData = {
+        'H': { valence: 1, color: 0xFFFFFF, radius: 0.3 },
+        'He': { valence: 0, color: 0xFFFFC0, radius: 0.4 },
+        'Li': { valence: 1, color: 0xFF1493, radius: 0.5 },
+        'Be': { valence: 2, color: 0xFF1493, radius: 0.5 },
+        'B': { valence: 3, color: 0xFF1493, radius: 0.4 },
+        'C': { valence: 4, color: 0x808080, radius: 0.4 },
+        'N': { valence: 5, color: 0x0000FF, radius: 0.4 },
+        'O': { valence: 6, color: 0xFF0000, radius: 0.4 },
+        'F': { valence: 7, color: 0xFFFF00, radius: 0.4 },
+        'Ne': { valence: 0, color: 0xFFFFC0, radius: 0.4 },
+        'Na': { valence: 1, color: 0x0000FF, radius: 0.5 },
+        'Mg': { valence: 2, color: 0x32CD32, radius: 0.5 },
+        'Al': { valence: 3, color: 0x808080, radius: 0.5 },
+        'Si': { valence: 4, color: 0xFFA500, radius: 0.4 },
+        'P': { valence: 5, color: 0xFFA500, radius: 0.4 },
+        'S': { valence: 6, color: 0xFFFF00, radius: 0.4 },
+        'Cl': { valence: 7, color: 0x00FF00, radius: 0.4 },
+        'Ar': { valence: 0, color: 0xFFFFC0, radius: 0.4 },
+        'K': { valence: 1, color: 0xFF4500, radius: 0.5 },
+        'Ca': { valence: 2, color: 0x87CEEB, radius: 0.5 },
+        'Sc': { valence: 3, color: 0xBEBEBE, radius: 0.6 },
+        'Ti': { valence: 4, color: 0xBEBEBE, radius: 0.6 },
+        'V': { valence: 5, color: 0xBEBEBE, radius: 0.6 },
+        'Cr': { valence: 6, color: 0xBEBEBE, radius: 0.6 },
+        'Mn': { valence: 7, color: 0xBEBEBE, radius: 0.6 },
+        'Fe': { valence: 2, color: 0xFFA500, radius: 0.6 },
+        'Co': { valence: 2, color: 0xBEBEBE, radius: 0.6 },
+        'Ni': { valence: 2, color: 0xBEBEBE, radius: 0.6 },
+        'Cu': { valence: 2, color: 0xB87333, radius: 0.6 },
+        'Zn': { valence: 2, color: 0xBEBEBE, radius: 0.6 },
+        'Ga': { valence: 3, color: 0xBEBEBE, radius: 0.6 },
+        'Ge': { valence: 4, color: 0xBEBEBE, radius: 0.6 },
+        'As': { valence: 5, color: 0xBEBEBE, radius: 0.5 },
+        'Se': { valence: 6, color: 0xFFA500, radius: 0.4 },
+        'Br': { valence: 7, color: 0xA52A2A, radius: 0.4 },
+        'Kr': { valence: 0, color: 0xFFFFC0, radius: 0.4 }
+    };
+
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    // Lighting
+    scene.background = new THREE.Color(0x87CEEB); // Light blue for sky effect
+scene.fog = new THREE.Fog(0x87CEEB, 10, 50);  // Fog for depth perception
+
+// Ground plane
+// Load a seamless texture for the ground
+const textureLoader = new THREE.TextureLoader();
+const groundTexture = textureLoader.load('path/to/ground_texture.jpg'); // Replace with your texture path
+groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+groundTexture.repeat.set(10, 10); // Adjust for more or less tiling
+
+const planeGeometry = new THREE.PlaneGeometry(100, 100);
+const planeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x88a07a,    // Soft green color to mimic grass
+    roughness: 0.8,     // High roughness for a non-reflective surface
+    metalness: 0.2      // Low metalness for a soft appearance
+});
+const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+groundPlane.rotation.x = -Math.PI / 2; // Horizontal alignment
+groundPlane.position.y = -1; // Slightly below the main objects
+groundPlane.receiveShadow = true;
+scene.add(groundPlane);
+
+// Add a grid helper to the ground for spatial context
+const gridHelper = new THREE.GridHelper(100, 50, 0x444444, 0x888888);
+gridHelper.position.y = -3.00; // Just above the ground plane
+scene.add(gridHelper);
+
+// Add an axis helper to show orientation
+const axesHelper = new THREE.AxesHelper(5);
+scene.add(axesHelper);
+
+// Improved Lighting
+const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Soft ambient light for base illumination
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+directionalLight.position.set(10, 20, 10);       // Position for sunlight angle
+directionalLight.castShadow = true;              // Enable shadows
+directionalLight.shadow.mapSize.width = 1024;    // Shadow map width
+directionalLight.shadow.mapSize.height = 1024;   // Shadow map height
+directionalLight.shadow.camera.near = 0.5;       // Shadow camera near plane
+directionalLight.shadow.camera.far = 50;         // Shadow camera far plane
+
+//directionalLight.position.set(10, 10, 10);
+//directionalLight.castShadow = true;  // Enable shadows
+scene.add(directionalLight);
+
+const pointLight = new THREE.PointLight(0xfff0dd, 0.8, 50); // Warm point light
+pointLight.position.set(-5, 5, -5);
+scene.add(pointLight);
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    camera.position.z = 5;
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .element-label {
+            color: #000000;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2px 4px;
+            border-radius: 3px;
+            user-select: none;
+            pointer-events: none;
+        }
+    `;
+
+    document.head.appendChild(style);
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.getElementById('container').appendChild(labelRenderer.domElement);
+
+    // Selected atoms array
+    let selectedAtoms = [];
+    let bonds = [];
+
+    // Function to calculate positions for valence electrons around an atom
+    function calculateElectronPositions(valenceCount, radius) {
+        const positions = [];
+        const angleStep = (2 * Math.PI) / Math.max(8, valenceCount); // Maximum 8 positions
+        
+        for (let i = 0; i < valenceCount; i++) {
+            const angle = i * angleStep;
+            positions.push(new THREE.Vector3(
+                Math.cos(angle) * (radius + 0.3), // Offset from atom surface
+                Math.sin(angle) * (radius + 0.3),
+                0
+            ));
+        }
+        return positions;
+    }
+
+    // Function to create electron visualization
+    function createElectron() {
+        const electronGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+        const electronMaterial = new THREE.MeshBasicMaterial({ color: "#00008B" });
+        return new THREE.Mesh(electronGeometry, electronMaterial);
+    }
+
+    // Modify the createAtom function to include valence electrons
+    function createAtom(element, position = new THREE.Vector3()) {
+        const atomData = PeriodicTableData[element];
+        const radius = atomData.radius;
+        const geometry = new THREE.SphereGeometry(radius, 32, 32);
+        const material = new THREE.MeshStandardMaterial({
+    color: atomData.color,
+    metalness: 0.5,           // Adds metallic sheen
+    roughness: 0.3,           // Balances reflectivity
+    emissive: new THREE.Color(0x222222), // Soft glow effect
+    emissiveIntensity: 0.4,   // Set higher for specific elements if needed
+});
+        
+        const atom = new THREE.Mesh(geometry, material);
+        atom.position.copy(position);
+        atom.userData.element = element;
+        atom.userData.valenceElectrons = [];
+        atom.userData.availableValence = atomData.valence;
+        atom.userData.isDynamic = true;
+        
+        // Create label
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'element-label';
+        labelDiv.textContent = element;
+        const label = new CSS2DObject(labelDiv);
+        label.position.set(0, radius + 0.1, 0);
+        label.userData.isDynamic = true;
+        atom.add(label);
+        
+        // Add valence electrons
+        const electronPositions = calculateElectronPositions(atomData.valence, radius);
+        electronPositions.forEach(pos => {
+            const electron = createElectron();
+            electron.position.copy(pos);
+            atom.add(electron);
+            atom.userData.valenceElectrons.push(electron);
+        });
+        
+        scene.add(atom);
+        return atom;
+    }
+
+
+    // Modify the createBond function to handle electron visualization
+    function createBond(atom1, atom2, pairs = 1) {
+        const bondGroup = new THREE.Group();
+        bondGroup.userData.isDynamic = true;
+        const spacing = 0.1;
+
+        // Remove electrons from atoms based on bond pairs
+        for (let i = 0; i < pairs; i++) {
+            // Remove one electron from each atom for each pair
+            if (atom1.userData.valenceElectrons.length > 0) {
+                const electron = atom1.userData.valenceElectrons.pop();
+                atom1.remove(electron);
             }
-        </script>
-        <script type="text/javascript" src="js/datgui/dat.gui.min.js"></script>
-
-        <script src="js/molFileToJSON.js"></script>
-
-        <style>
-            body { 
-                margin: 0; 
-                background-color: black;
+            if (atom2.userData.valenceElectrons.length > 0) {
+                const electron = atom2.userData.valenceElectrons.pop();
+                atom2.remove(electron);
             }
-            #fileInput {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 0%;
-                height: 0%;
-                opacity: 0;
-                cursor: pointer;
-            }
-        </style> 
-    </head>
-    <body>
-        <input id="fileInput" type="file"  accept=".mol" />
+        }
 
-        <script type= "module">
-            import {OrbitControls} from './js/OrbitControls.js';
-            import { VRButton } from './js/VRButton.js';
-            import { ARButton } from './js/ARButton.js';
+        // Update available valence count
+        atom1.userData.availableValence -= pairs;
+        atom2.userData.availableValence -= pairs;
 
+        // Create the bond cylinders
+        for (let i = 0; i < pairs; i++) {
+            const bondGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 16);
+            const bondMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    metalness: 0.6,         // Metallic look for realism
+    roughness: 0.2,
+});
+            const bond = new THREE.Mesh(bondGeometry, bondMaterial);
 
-            import * as THREE from './js/three.module.js';
+            const offset = (pairs > 1) ? (i - (pairs - 1) / 2) * spacing : 0;
+            const offsetVector = new THREE.Vector3();
+            const direction = new THREE.Vector3().subVectors(atom2.position, atom1.position);
+            const perpendicular = new THREE.Vector3(direction.y, -direction.x, 0).normalize();
+            offsetVector.copy(perpendicular).multiplyScalar(offset);
+
+            const start = new THREE.Vector3().copy(atom1.position).add(offsetVector);
+            const end = new THREE.Vector3().copy(atom2.position).add(offsetVector);
+            const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
             
-
-            const clock = new THREE.Clock();
-            let deltaTime = 0;
-            let totalTime = 0;
-            let centerOffset = -10;
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setClearColor( 0x000000, 0 );
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            document.body.appendChild( renderer.domElement );
-
-            const activateAR = document.body.appendChild( ARButton.createButton( renderer ) );
-            renderer.xr.enabled = true;
-
+            bond.position.copy(midpoint);
+            bond.lookAt(end);
+            bond.rotateX(Math.PI / 2);
             
-            renderer.setAnimationLoop( function () {
-                renderer.render( scene, camera );
-            } );
+            const distance = start.distanceTo(end);
+            bond.scale.set(1, distance, 1);
 
+            bondGroup.add(bond);
+        }
 
-            const controls = new OrbitControls( camera, renderer.domElement );
-            controls.target.set( 0, 0, centerOffset );
+        scene.add(bondGroup);
+        return bondGroup;
+    }
+    function clearScene() {
+      const objectsToRemove = [];
 
-            
-            let autoRotateX = {
-                switch: false
+    // Gather all dynamically added atoms, bonds, and labels
+    scene.traverse((object) => {
+        if (object.userData.isDynamic) {
+            objectsToRemove.push(object);
+        }
+    });
+
+    // Remove all objects at once
+    objectsToRemove.forEach((object) => {
+        if (object instanceof THREE.Mesh || object instanceof THREE.Group) {
+            scene.remove(object);
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) object.material.dispose();
+        } else if (object instanceof CSS2DObject) {
+            if (object.element && object.element.parentNode) {
+                object.element.parentNode.removeChild(object.element);
             }
-            let autoRotateY = {
-                switch: false
-            }
-            let autoRotateZ = {
-                switch: false
-            }
+        }
+    });
 
-            const moleculeGeometries = {
-                "C" : new THREE.SphereGeometry( .8, 32, 32 ),
-                "H" : new THREE.SphereGeometry( .3, 32, 32 ),
-                "O" : new THREE.SphereGeometry( .5, 32, 32 ),
-                "N" : new THREE.SphereGeometry( .6, 32, 32 ),
-                "S" : new THREE.SphereGeometry( .8, 32, 32 ),
-                "P" : new THREE.SphereGeometry( .9, 32, 32 ),
-                "F" : new THREE.SphereGeometry( .4, 32, 32 ),
-                "Cl": new THREE.SphereGeometry( .5, 32, 32 ),
-                "Br": new THREE.SphereGeometry( .6, 32, 32 ),
-                "I" : new THREE.SphereGeometry( .7, 32, 32 ),
-            }
-            const moleculeMaterials = {
-                "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
-                "H" : new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.9, transparent: true} ),
-                "O" : new THREE.MeshPhongMaterial( { color: 0xff0000, opacity: 0.9, transparent: true} ),
-                "N" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
-                "S" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
-                "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
-                "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-                "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-                "Br": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-                "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            }
-            const cylinderMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+    // Clear selected atoms and bonds arrays
+    selectedAtoms = [];
+    bonds = [];
+
+    // Hide any displayed message
+    document.getElementById('message').style.display = 'none';
+    }
 
 
-            let moleculeGroup = new THREE.Group();
 
-            function drawMolecule(molFile){
-                while(moleculeGroup.children.length > 0){ 
-                    moleculeGroup.remove(moleculeGroup.children[0]); 
-                }
-                const molObject = molFileToJSON(molFile);
+    function showMessage(text, isError = false) {
+      const messageEl = document.getElementById('message');
+      messageEl.style.display = 'block';
+      messageEl.style.background = isError ? 'rgba(255, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+      messageEl.style.color = isError ? 'white' : 'black';
+      messageEl.textContent = text;
+    }
 
-                let firstPoint = new THREE.Vector3(
-                    molObject.atoms[0].position.x, 
-                    molObject.atoms[0].position.y, 
-                    molObject.atoms[0].position.z);
+    function findValidCompound(atoms) {
+      const atomSymbols = atoms.map(atom => atom.userData.element);
+      
+      // Sort atoms to match compound patterns
+      for (const [name, compound] of Object.entries(validCompounds)) {
+        const compoundAtoms = [...compound.atoms];
+        const selectedAtoms = [...atomSymbols];
+        
+        // Check if arrays have same elements (ignoring order)
+        if (compoundAtoms.length === selectedAtoms.length &&
+            compoundAtoms.every(element => {
+              const index = selectedAtoms.indexOf(element);
+              if (index !== -1) {
+                selectedAtoms.splice(index, 1);
+                return true;
+              }
+              return false;
+            })) {
+          return compound;
+        }
+      }
+      return null;
+    }
 
-                let limits = {
-                    x: {
-                        min: firstPoint.x,
-                        max: firstPoint.x
-                    },
-                    y: {
-                        min: firstPoint.y,
-                        max: firstPoint.y
-                    },
-                    z: {
-                        min: firstPoint.z,
-                        max: firstPoint.z
-                    }
-                }
+    // Modify the createMolecule function to include electron handling
+    function createMolecule() {
+        const compound = findValidCompound(selectedAtoms);
+        
+        if (!compound) {
+            showMessage('Invalid combination of atoms!', true);
+            return;
+        }
 
-                for(let item of molObject.atoms){
-                    let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
-                    if(Number(point.x) < Number(limits.x.min)){
-                        limits.x.min = point.x;
-                    }
-                    if(Number(point.x) > Number(limits.x.max)){
-                        limits.x.max = point.x;
-                    }
-                    if(Number(point.y) < Number(limits.y.min)){
-                        limits.y.min = point.y;
-                    }
-                    if(Number(point.y) > Number(limits.y.max)){
-                        limits.y.max = point.y;
-                    }
-                    if(Number(point.z) < Number(limits.z.min)){
-                        limits.z.min = point.z;
-                    }
-                    if(Number(point.z) > Number(limits.z.max))  {
-                        limits.z.max = point.z;
-                    }
-                }
+        bonds.forEach(bond => scene.remove(bond));
+        bonds = [];
 
-                let moleculeCenter = new THREE.Vector3(
-                    (Number((limits.x.min)) + Number(limits.x.max))/2,
-                    (Number((limits.y.min)) + Number(limits.y.max))/2,
-                    (Number((limits.z.min)) + Number(limits.z.max))/2);
-                            
-                for(let item of molObject.atoms){
-                    const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
-                    sphere.position.x = item.position.x - moleculeCenter.x;
-                    sphere.position.y = item.position.y - moleculeCenter.y;
-                    sphere.position.z = item.position.z - moleculeCenter.z;
-                    moleculeGroup.add( sphere );
-                }
-                for(let bond of molObject.bonds){
-
-                    let index1 = Number(bond[0])-1;
-                    let index2 = Number(bond[1])-1;
-
-                    let atom1 = molObject.atoms[index1];
-                    let atom2 = molObject.atoms[index2];
-
-                    let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
-                    let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
-                    
-                    let distance = point1.distanceTo(point2);
-
-                    let cylinderRadius = bond[2] == 1 ? .05 : .15;
-
-                    const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
-                    cylinderGeometry.translate(0, distance / 2, 0);
-                    cylinderGeometry.rotateX(Math.PI / 2);
-
-                    const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
-                    cylinder.position.x = atom1.position.x - moleculeCenter.x;
-                    cylinder.position.y = atom1.position.y - moleculeCenter.y;
-                    cylinder.position.z = atom1.position.z - moleculeCenter.z;
-                    cylinder.lookAt(point2);
-
-                    moleculeGroup.add( cylinder );
-
-                    }
-
-                moleculeGroup.position.z = centerOffset;
-
-                scene.add( moleculeGroup );
-            }
-
-            export function getMolecule(CSID){
-                fetch('molecules/' + CSID + '.mol')
-                    .then(response => response.text())
-                    .then(molFile => {
-                        drawMolecule(molFile);
-                    });
-                }
-
-
-            const moleculeFileInput = document.getElementById('fileInput');
-            moleculeFileInput.addEventListener('change', function(e) {
-                const file = moleculeFileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const text = reader.result;
-                    drawMolecule(text);
-                };
-                reader.readAsText(file);
+        // Reset electron visualization
+        selectedAtoms.forEach((atom, index) => {
+            // Remove all existing electrons
+            atom.userData.valenceElectrons.forEach(electron => {
+                atom.remove(electron);
             });
-
-            const loadMoleculeFile = {
-                loadFile : function() { 
-                    document.getElementById('fileInput').click();
-                },
-            };
-
-            const showExampleMolecules = {
-                showCaffeine : function() { 
-                    getMolecule(2424);
-                },
-                showEthanol : function() { 
-                    getMolecule(682);
-                },
-                showCatnip : function() { 
-                    getMolecule(141747);
-                },
-                showThebacon : function() { 
-                    getMolecule(9683173);
-                }
-            };
-
-            function init(defaultCSID){
-
-                getMolecule(defaultCSID);
-
-                const spotLight = new THREE.SpotLight( 0xffffff );
-                spotLight.position.set( 100, 1000, 100 );
-                spotLight.castShadow = true;
-                spotLight.shadow.mapSize.width = 1024;
-                spotLight.shadow.mapSize.height = 1024;
-                spotLight.shadow.camera.near = 500;
-                spotLight.shadow.camera.far = 4000;
-                spotLight.shadow.camera.fov = 30;
-                scene.add( spotLight );
-
-                const light = new THREE.AmbientLight( 0xffffff ); // soft white light
-                scene.add( light );
-
-                camera.position.x = 5;
-                camera.position.y = 5;
-                camera.position.z = centerOffset - 5;
-
-                // const axesHelper = new THREE.AxesHelper( 5 );
-                // scene.add( axesHelper );
-
-                const gui = new dat.GUI();
-
-                const loadMolecule = gui.addFolder('Load')
-                loadMolecule.add(loadMoleculeFile, 'loadFile').name('Load .mol file from device');
-                loadMolecule.open();
-
-                const moleculeType = gui.addFolder('Examples')
-                moleculeType.add(showExampleMolecules, 'showCaffeine').name('Caffeine (Coffee, Chocolate, Tea)');
-                moleculeType.add(showExampleMolecules, 'showEthanol').name('Ethanol (Alcohol)');
-                moleculeType.add(showExampleMolecules, 'showCatnip').name('Nepetalactone (Catnip)');
-                moleculeType.add(showExampleMolecules, 'showThebacon').name('Thebacon');
-                moleculeType.open();
-                
-                const moleculePosition = gui.addFolder('Position')
-                moleculePosition.add(moleculeGroup.position, 'x', -10, 10)
-                moleculePosition.add(moleculeGroup.position, 'y', -10, 10)
-                moleculePosition.add(moleculeGroup.position, 'z', -10, 10)
-
-                const moleculeRotation = gui.addFolder('Rotation')
-                moleculeRotation.add(moleculeGroup.rotation, 'x', -Math.PI, Math.PI)
-                moleculeRotation.add(moleculeGroup.rotation, 'y', -Math.PI, Math.PI)
-                moleculeRotation.add(moleculeGroup.rotation, 'z', -Math.PI, Math.PI)
-                moleculeRotation.add(autoRotateX, "switch").name("Auto Rotate X");
-                moleculeRotation.add(autoRotateY, "switch").name("Auto Rotate Y");
-                moleculeRotation.add(autoRotateZ, "switch").name("Auto Rotate Z");
-                
-                const moleculeScale = gui.addFolder('Scale')
-                const scaleX = moleculeScale.add(moleculeGroup.scale, 'x', .1, 1.5).name("Scaling Factor")
-                scaleX.onChange(function(value){
-                    moleculeGroup.scale.y = value;
-                    moleculeGroup.scale.z = value;
-                })
-            }
+            atom.userData.valenceElectrons = [];
             
-            function animate() {
-                requestAnimationFrame( animate );
-                renderer.render( scene, camera );
-                
-                deltaTime = clock.getDelta();
-                totalTime += deltaTime;
-
-                if(autoRotateX.switch){
-                    moleculeGroup.rotation.x-=.5*deltaTime;
-                }
-                if(autoRotateY.switch){
-                    moleculeGroup.rotation.y-=.5*deltaTime;
-                }
-                if(autoRotateZ.switch){
-                    moleculeGroup.rotation.z-=.5*deltaTime;
-                }
-
-                controls.update();
-            }
+            // Reposition atom
+            atom.position.copy(compound.positions[index]);
             
-            init(2424);
+            // Recreate electrons based on available valence
+            const electronPositions = calculateElectronPositions(
+                PeriodicTableData[atom.userData.element].valence,
+                PeriodicTableData[atom.userData.element].radius
+            );
+            
+            electronPositions.forEach(pos => {
+                const electron = createElectron();
+                electron.position.copy(pos);
+                atom.add(electron);
+                atom.userData.valenceElectrons.push(electron);
+            });
+        });
 
-            animate();
+        // Create bonds and update electron visualization
+        compound.bonds.forEach(bondInfo => {
+            const bond = createBond(
+                selectedAtoms[bondInfo.from],
+                selectedAtoms[bondInfo.to],
+                bondInfo.pairs
+            );
+            bonds.push(bond);
+        });
 
-        </script>
-    </body>
-    </html>
+        showMessage(`Created ${Object.keys(validCompounds).find(key => validCompounds[key] === compound)}`);
+    }
+
+    // Event Listeners
+    document.querySelectorAll('.periodic-table-element').forEach(element => {
+      element.addEventListener('click', (event) => {
+        const elementSymbol = event.target.dataset.element;
+        if (elementSymbol) {
+          const atom = createAtom(elementSymbol, new THREE.Vector3(
+            (Math.random() - 0.5) * 4,
+            (Math.random() - 0.5) * 4,
+            0
+          ));
+          selectedAtoms.push(atom);
+        }
+      });
+    });
+
+    document.getElementById('bondButton').addEventListener('click', createMolecule);
+    document.getElementById('clearButton').addEventListener('click', clearScene);
+
+    let xrSession = null;
+
+document.getElementById('arButton').addEventListener('click', () => {
+    if (navigator.xr) {
+        navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['hit-test']
+        }).then((session) => {
+            xrSession = session;
+            renderer.xr.enabled = true;
+            renderer.xr.setReferenceSpaceType('local');
+            renderer.xr.setSession(session);
+            animateAR();
+        }).catch(console.error);
+    } else {
+        alert("AR not supported on this device.");
+    }
+});
+
+function animateAR() {
+    renderer.setAnimationLoop(() => {
+        controls.update();
+        renderer.render(scene, camera);
+    });
+}
+
+// Optional: End AR session
+if (xrSession) {
+    xrSession.addEventListener('end', () => {
+        renderer.xr.enabled = false;
+    });
+}
+
+
+    // Update window resize handler to include label renderer
+    window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Update animation loop to render labels
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
