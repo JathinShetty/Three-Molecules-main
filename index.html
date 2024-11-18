@@ -758,9 +758,10 @@ scene.add(pointLight);
     document.getElementById('bondButton').addEventListener('click', createMolecule);
     document.getElementById('clearButton').addEventListener('click', clearScene);
 
+
     let xrSession = null;
 
-document.getElementById('arButton').addEventListener('click', () => {
+    document.getElementById('arButton').addEventListener('click', () => {
     if (navigator.xr) {
         navigator.xr.requestSession('immersive-ar', {
             requiredFeatures: ['hit-test']
@@ -769,6 +770,12 @@ document.getElementById('arButton').addEventListener('click', () => {
             renderer.xr.enabled = true;
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
+            
+            // Add this to ensure the background and ground are removed:
+            scene.background = null;  // Remove background
+            scene.remove(groundPlane); // Remove ground plane
+
+
             animateAR();
         }).catch(console.error);
     } else {
@@ -783,10 +790,13 @@ function animateAR() {
     });
 }
 
-// Optional: End AR session
+// End AR session handling
 if (xrSession) {
     xrSession.addEventListener('end', () => {
         renderer.xr.enabled = false;
+        // Comment out the following lines to prevent background and ground plane restoration:
+        // scene.background = new THREE.Color(0x87CEEB);
+        // scene.add(groundPlane);
     });
 }
 
