@@ -29,7 +29,7 @@
 }
 
 #periodic-table {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 20px;
     background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
@@ -37,7 +37,7 @@
     border-radius: 5px;
     color: #ffffff;  /* White text */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Subtle shadow for depth */
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .controls-container {
@@ -764,6 +764,14 @@ scene.add(pointLight);
 
     document.getElementById('arButton').addEventListener('click', () => {
     if (navigator.xr) {
+        // First, ensure the periodic table is visible and positioned correctly
+        const periodicTable = document.getElementById('periodic-table');
+        periodicTable.style.position = 'fixed';
+        periodicTable.style.zIndex = '1000';
+        periodicTable.style.left = '20px';
+        periodicTable.style.bottom = '20px';
+        periodicTable.style.display = 'block';
+
         navigator.xr.requestSession('immersive-ar', {
             requiredFeatures: ['hit-test']
         }).then((session) => {
@@ -771,23 +779,31 @@ scene.add(pointLight);
             renderer.xr.enabled = true;
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
-
-            // Remove background and ground
-            scene.background = null;
-            scene.remove(groundPlane);
-
-            // Show the periodic table toggle button
-            document.getElementById('togglePeriodicTable').style.display = 'inline-block';
-
-            // Hide the periodic table initially
-            document.getElementById('periodic-table').style.display = 'none';
+            
+            // Modify periodic table element click handler for AR mode
+            document.querySelectorAll('.periodic-table-element').forEach(element => {
+                element.addEventListener('click', arElementClickHandler);
+            });
 
             animateAR();
-        }).catch(console.error);
+        }).catch(error => {
+            console.error("AR Session Error:", error);
+            alert("Could not start AR session: " + error.message);
+        });
     } else {
         alert("AR not supported on this device.");
     }
 });
+
+function arElementClickHandler(event) {
+    const elementSymbol = event.target.dataset.element;
+    if (elementSymbol) {
+        // In AR mode, place atoms at a fixed distance in front of the camera
+        const atomPosition = new THREE.Vector3(0, 0, -3).applyQuaternion(camera.quaternion);
+        const atom = createAtom(elementSymbol, atomPosition);
+        selectedAtoms.push(atom);
+    }
+}
 
 document.getElementById('togglePeriodicTable').addEventListener('click', () => {
     const periodicTable = document.getElementById('periodic-table');
@@ -818,6 +834,33 @@ if (xrSession) {
         document.getElementById('periodic-table').style.display = 'block';
     });
 }
+
+document.addEventListener('xrsessionend', (event) => {
+    const periodicTable = document.getElementById('periodic-table');
+    periodicTable.style.position = 'absolute';
+    periodicTable.style.zIndex = '1000';
+    periodicTable.style.display = 'block';
+
+    // Remove the AR-specific click handler
+    document.querySelectorAll('.periodic-table-element').forEach(element => {
+        element.removeEventListener('click', arElementClickHandler);
+    });
+
+    // Restore original renderer settings
+    renderer.xr.enabled = false;
+});
+
+function ensurePeriodicTableVisibility() {
+    const periodicTable = document.getElementById('periodic-table');
+    periodicTable.style.position = 'fixed';
+    periodicTable.style.zIndex = '1000';
+    periodicTable.style.left = '20px';
+    periodicTable.style.bottom = '20px';
+    periodicTable.style.display = 'block';
+}
+
+// Call this function when the page loads
+ensurePeriodicTableVisibility();
 
 
 
