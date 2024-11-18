@@ -828,6 +828,20 @@ scene.add(pointLight);
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('camera-background');
+
+            // Request camera access
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error('Camera access denied:', error);
+                    alert('Camera access is required for AR experience');
+                });
+        });
+
 function ensurePeriodicTableVisibility() {
     const periodicTable = document.getElementById('periodic-table');
     periodicTable.style.position = 'fixed';
