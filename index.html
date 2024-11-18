@@ -764,14 +764,6 @@ scene.add(pointLight);
 
     document.getElementById('arButton').addEventListener('click', () => {
     if (navigator.xr) {
-        // First, ensure the periodic table is visible and positioned correctly
-        const periodicTable = document.getElementById('periodic-table');
-        periodicTable.style.position = 'fixed';
-        periodicTable.style.zIndex = '1000';
-        periodicTable.style.left = '20px';
-        periodicTable.style.bottom = '20px';
-        periodicTable.style.display = 'block';
-
         navigator.xr.requestSession('immersive-ar', {
             requiredFeatures: ['hit-test']
         }).then((session) => {
@@ -779,21 +771,34 @@ scene.add(pointLight);
             renderer.xr.enabled = true;
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
-            
-            // Modify periodic table element click handler for AR mode
-            document.querySelectorAll('.periodic-table-element').forEach(element => {
-                element.addEventListener('click', arElementClickHandler);
-            });
 
+            // Keep periodic table visible in AR mode
+            const periodicTable = document.getElementById('periodic-table');
+            periodicTable.style.position = 'fixed';
+            periodicTable.style.zIndex = '1000';
+            periodicTable.style.left = '20px';
+            periodicTable.style.bottom = '20px';
+            periodicTable.style.display = 'block';
+
+            // Start AR rendering loop
             animateAR();
-        }).catch(error => {
-            console.error("AR Session Error:", error);
-            alert("Could not start AR session: " + error.message);
-        });
+        }).catch(console.error);
     } else {
         alert("AR not supported on this device.");
     }
 });
+
+function ensurePeriodicTableVisibility() {
+    const periodicTable = document.getElementById('periodic-table');
+    periodicTable.style.position = 'fixed';
+    periodicTable.style.zIndex = '1000';
+    periodicTable.style.left = '20px';
+    periodicTable.style.bottom = '20px';
+    periodicTable.style.display = 'block';
+}
+
+// Ensure periodic table is always visible on page load and during AR sessions
+ensurePeriodicTableVisibility();
 
 function arElementClickHandler(event) {
     const elementSymbol = event.target.dataset.element;
