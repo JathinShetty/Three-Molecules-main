@@ -771,10 +771,21 @@ scene.add(pointLight);
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
             
-            // Add this to ensure the background and ground are removed:
-            scene.background = null;  // Remove background
-            scene.remove(groundPlane); // Remove ground plane
-
+            // Preserve periodic table visibility
+            document.getElementById('periodic-table').style.display = 'block';
+            
+            // Modify periodic table element click handler for AR mode
+            document.querySelectorAll('.periodic-table-element').forEach(element => {
+                element.addEventListener('click', (event) => {
+                    const elementSymbol = event.target.dataset.element;
+                    if (elementSymbol) {
+                        // In AR mode, place atoms at a fixed distance in front of the camera
+                        const atomPosition = new THREE.Vector3(0, 0, -3).applyQuaternion(camera.quaternion);
+                        const atom = createAtom(elementSymbol, atomPosition);
+                        selectedAtoms.push(atom);
+                    }
+                });
+            });
 
             animateAR();
         }).catch(console.error);
@@ -787,6 +798,7 @@ function animateAR() {
     renderer.setAnimationLoop(() => {
         controls.update();
         renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
     });
 }
 
@@ -794,9 +806,24 @@ function animateAR() {
 if (xrSession) {
     xrSession.addEventListener('end', () => {
         renderer.xr.enabled = false;
-        // Comment out the following lines to prevent background and ground plane restoration:
-        // scene.background = new THREE.Color(0x87CEEB);
-        // scene.add(groundPlane);
+        
+        // Restore periodic table visibility
+        document.getElementById('periodic-table').style.display = 'block';
+        
+        // Restore original click handler
+        document.querySelectorAll('.periodic-table-element').forEach(element => {
+            element.addEventListener('click', (event) => {
+                const elementSymbol = event.target.dataset.element;
+                if (elementSymbol) {
+                    const atom = createAtom(elementSymbol, new THREE.Vector3(
+                        (Math.random() - 0.5) * 4,
+                        (Math.random() - 0.5) * 4,
+                        0
+                    ));
+                    selectedAtoms.push(atom);
+                }
+            });
+        });
     });
 }
 
