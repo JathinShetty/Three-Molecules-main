@@ -771,21 +771,21 @@ scene.add(pointLight);
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
             
-            // Preserve periodic table visibility
-            document.getElementById('periodic-table').style.display = 'block';
-            
-            // Modify periodic table element click handler for AR mode
-            document.querySelectorAll('.periodic-table-element').forEach(element => {
-                element.addEventListener('click', (event) => {
-                    const elementSymbol = event.target.dataset.element;
-                    if (elementSymbol) {
-                        // In AR mode, place atoms at a fixed distance in front of the camera
-                        const atomPosition = new THREE.Vector3(0, 0, -3).applyQuaternion(camera.quaternion);
-                        const atom = createAtom(elementSymbol, atomPosition);
-                        selectedAtoms.push(atom);
-                    }
-                });
-            });
+            // Ensure periodic table is visible and positioning is correct
+            const periodicTable = document.getElementById('periodic-table');
+            periodicTable.style.display = 'block';
+            periodicTable.style.position = 'absolute';
+            periodicTable.style.zIndex = '1000';
+            periodicTable.style.bottom = '20px';
+            periodicTable.style.left = '20px';
+            periodicTable.style.background = 'rgba(0, 0, 0, 0.6)';
+            periodicTable.style.color = '#ffffff';
+            periodicTable.style.padding = '10px';
+            periodicTable.style.borderRadius = '5px';
+
+            scene.background = null;  // Remove background for AR
+            scene.fog.near = 10;      // Adjust fog for AR
+            scene.fog.far = 50;
 
             animateAR();
         }).catch(console.error);
@@ -807,23 +807,17 @@ if (xrSession) {
     xrSession.addEventListener('end', () => {
         renderer.xr.enabled = false;
         
-        // Restore periodic table visibility
-        document.getElementById('periodic-table').style.display = 'block';
+        // Restore scene and periodic table
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog.near = 10;
+        scene.fog.far = 50;
         
-        // Restore original click handler
-        document.querySelectorAll('.periodic-table-element').forEach(element => {
-            element.addEventListener('click', (event) => {
-                const elementSymbol = event.target.dataset.element;
-                if (elementSymbol) {
-                    const atom = createAtom(elementSymbol, new THREE.Vector3(
-                        (Math.random() - 0.5) * 4,
-                        (Math.random() - 0.5) * 4,
-                        0
-                    ));
-                    selectedAtoms.push(atom);
-                }
-            });
-        });
+        const periodicTable = document.getElementById('periodic-table');
+        periodicTable.style.display = 'block';
+        periodicTable.style.position = 'absolute';
+        periodicTable.style.zIndex = '1000';
+        periodicTable.style.bottom = '20px';
+        periodicTable.style.left = '20px';
     });
 }
 
