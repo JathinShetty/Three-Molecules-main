@@ -412,6 +412,46 @@
         'Kr': { valence: 0, color: 0xFFFFC0, radius: 0.4 }
     };
 
+    const arModeBtn = document.getElementById('ar-mode-btn');
+        const arMode = document.getElementById('ar-mode');
+        const periodicTable = document.getElementById('periodic-table');
+
+        let isARModeActive = false;
+
+        arModeBtn.addEventListener('click', () => {
+            isARModeActive = !isARModeActive;
+            
+            if (isARModeActive) {
+                // Turn on camera for AR mode
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                        .then(function(stream) {
+                            arMode.innerHTML = '<video autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>';
+                            const video = arMode.querySelector('video');
+                            video.srcObject = stream;
+                        })
+                        .catch(function(err) {
+                            console.log("Error accessing camera: " + err);
+                        });
+                }
+                arModeBtn.textContent = 'Exit AR';
+                // Keep periodic table visible
+                periodicTable.style.display = 'block';
+            } else {
+                // Exit AR mode
+                const video = arMode.querySelector('video');
+                if (video) {
+                    const stream = video.srcObject;
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+                arMode.innerHTML = '';
+                arModeBtn.textContent = 'AR Mode';
+                periodicTable.style.display = 'block';
+            }
+        })
+
+
 
     // Scene setup
     const scene = new THREE.Scene();
