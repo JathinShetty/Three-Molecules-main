@@ -118,6 +118,7 @@
     <button id="bondButton" class="button">Bond</button>
     <button id="clearButton" class="button">Clear</button>
     <button id="arButton" class="button">AR Mode</button>
+    <button id="togglePeriodicTable" class="button" style="display: none;">Toggle Table</button>
   </div>
   <div id="message"></div>
   <div id="periodic-table">
@@ -770,22 +771,16 @@ scene.add(pointLight);
             renderer.xr.enabled = true;
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
-            
-            // Ensure periodic table is visible and positioning is correct
-            const periodicTable = document.getElementById('periodic-table');
-            periodicTable.style.display = 'block';
-            periodicTable.style.position = 'absolute';
-            periodicTable.style.zIndex = '1000';
-            periodicTable.style.bottom = '20px';
-            periodicTable.style.left = '20px';
-            periodicTable.style.background = 'rgba(0, 0, 0, 0.6)';
-            periodicTable.style.color = '#ffffff';
-            periodicTable.style.padding = '10px';
-            periodicTable.style.borderRadius = '5px';
 
-            scene.background = null;  // Remove background for AR
-            scene.fog.near = 10;      // Adjust fog for AR
-            scene.fog.far = 50;
+            // Remove background and ground
+            scene.background = null;
+            scene.remove(groundPlane);
+
+            // Show the periodic table toggle button
+            document.getElementById('togglePeriodicTable').style.display = 'inline-block';
+
+            // Hide the periodic table initially
+            document.getElementById('periodic-table').style.display = 'none';
 
             animateAR();
         }).catch(console.error);
@@ -793,6 +788,13 @@ scene.add(pointLight);
         alert("AR not supported on this device.");
     }
 });
+
+document.getElementById('togglePeriodicTable').addEventListener('click', () => {
+    const periodicTable = document.getElementById('periodic-table');
+    periodicTable.style.display =
+        periodicTable.style.display === 'none' ? 'block' : 'none';
+});
+
 
 function animateAR() {
     renderer.setAnimationLoop(() => {
@@ -806,20 +808,17 @@ function animateAR() {
 if (xrSession) {
     xrSession.addEventListener('end', () => {
         renderer.xr.enabled = false;
-        
-        // Restore scene and periodic table
+
+        // Restore background and ground
         scene.background = new THREE.Color(0x87CEEB);
-        scene.fog.near = 10;
-        scene.fog.far = 50;
-        
-        const periodicTable = document.getElementById('periodic-table');
-        periodicTable.style.display = 'block';
-        periodicTable.style.position = 'absolute';
-        periodicTable.style.zIndex = '1000';
-        periodicTable.style.bottom = '20px';
-        periodicTable.style.left = '20px';
+        scene.add(groundPlane);
+
+        // Hide the toggle button and show the periodic table
+        document.getElementById('togglePeriodicTable').style.display = 'none';
+        document.getElementById('periodic-table').style.display = 'block';
     });
 }
+
 
 
     // Update window resize handler to include label renderer
