@@ -14,6 +14,56 @@
     height: 100%;
 }
 
+.periodic-table-element[data-element="H"],
+.periodic-table-element[data-element="Li"],
+.periodic-table-element[data-element="Na"],
+.periodic-table-element[data-element="K"] {
+    background: #FF9999; /* Red for Alkali Metals */
+}
+
+.periodic-table-element[data-element="Be"],
+.periodic-table-element[data-element="Mg"],
+.periodic-table-element[data-element="Ca"] {
+    background: #99CC99; /* Green for Alkaline Earth Metals */
+}
+
+.periodic-table-element[data-element="B"],
+.periodic-table-element[data-element="Al"],
+.periodic-table-element[data-element="Ga"] {
+    background: #FFCC66; /* Orange for Metalloids */
+}
+
+.periodic-table-element[data-element="C"],
+.periodic-table-element[data-element="Si"],
+.periodic-table-element[data-element="Ge"] {
+    background: #CCCCCC; /* Gray for Nonmetals */
+}
+
+.periodic-table-element[data-element="N"],
+.periodic-table-element[data-element="P"],
+.periodic-table-element[data-element="As"] {
+    background: #66CCCC; /* Cyan for Pnictogens */
+}
+
+.periodic-table-element[data-element="O"],
+.periodic-table-element[data-element="S"],
+.periodic-table-element[data-element="Se"] {
+    background: #99CCFF; /* Light Blue for Chalcogens */
+}
+
+.periodic-table-element[data-element="F"],
+.periodic-table-element[data-element="Cl"],
+.periodic-table-element[data-element="Br"] {
+    background: #FFCCFF; /* Pink for Halogens */
+}
+
+.periodic-table-element[data-element="He"],
+.periodic-table-element[data-element="Ne"],
+.periodic-table-element[data-element="Ar"] {
+    background: #FFFF99; /* Yellow for Noble Gases */
+}
+
+
 .periodic-table-container {
     position: absolute;
     bottom: 20px;
@@ -29,7 +79,7 @@
 }
 
 #periodic-table {
-    position: fixed;
+    position: absolute;
     bottom: 20px;
     left: 20px;
     background: rgba(0, 0, 0, 0.6);  /* Darker semi-transparent background */
@@ -37,7 +87,7 @@
     border-radius: 5px;
     color: #ffffff;  /* White text */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Subtle shadow for depth */
-    z-index: 10000;
+    z-index: 1000;
 }
 
 .controls-container {
@@ -100,6 +150,22 @@
     cursor: default;
 }
 
+.button {
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+}
+
+.button:hover {
+    background: #45a049;
+}
+
+
 #message {
     position: absolute;
     top: 70px;
@@ -118,7 +184,6 @@
     <button id="bondButton" class="button">Bond</button>
     <button id="clearButton" class="button">Clear</button>
     <button id="arButton" class="button">AR Mode</button>
-    <button id="togglePeriodicTable" class="button" style="display: none;">Toggle Table</button>
   </div>
   <div id="message"></div>
   <div id="periodic-table">
@@ -230,14 +295,15 @@
     'H2O': {
         atoms: ['H', 'H', 'O'],
         bonds: [
-        { from: 1, to: 0, pairs: 1 },
-        { from: 1, to: 2, pairs: 1 }
+            { from: 1, to: 0, pairs: 1 },
+            { from: 1, to: 2, pairs: 1 }
         ],
         positions: [
-        new THREE.Vector3(-1, 0, 0),  // H
-        new THREE.Vector3(1, 0, 0),   // H
-        new THREE.Vector3(0, 1, 0)    // O
-        ]
+            new THREE.Vector3(-1, 0, 0),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(0, 1, 0)
+        ],
+        wikiLink: 'https://en.wikipedia.org/wiki/Water'
     },
     'CO2': {
         atoms: ['C', 'O', 'O'],
@@ -374,16 +440,16 @@
 
     // Periodic table data
     const PeriodicTableData = {
-        'H': { valence: 1, color: 0xFFFFFF, radius: 0.3 },
-        'He': { valence: 0, color: 0xFFFFC0, radius: 0.4 },
-        'Li': { valence: 1, color: 0xFF1493, radius: 0.5 },
-        'Be': { valence: 2, color: 0xFF1493, radius: 0.5 },
-        'B': { valence: 3, color: 0xFF1493, radius: 0.4 },
-        'C': { valence: 4, color: 0x808080, radius: 0.4 },
-        'N': { valence: 5, color: 0x0000FF, radius: 0.4 },
-        'O': { valence: 6, color: 0xFF0000, radius: 0.4 },
-        'F': { valence: 7, color: 0xFFFF00, radius: 0.4 },
-        'Ne': { valence: 0, color: 0xFFFFC0, radius: 0.4 },
+        'H': { valence: 1, color: 0xFF6666, radius: 0.3 },
+        'He': { valence: 0, color: 0xFFD700, radius: 0.4 },
+        'Li': { valence: 1, color: 0xFFA500, radius: 0.5 },
+        'Be': { valence: 2, color: 0xADFF2F, radius: 0.5 },
+        'B': { valence: 3, color: 0x40E0D0, radius: 0.4 },
+        'C': { valence: 4, color: 0xA9A9A9, radius: 0.4 },
+        'N': { valence: 5, color: 0x1E90FF, radius: 0.4 },
+        'O': { valence: 6, color: 0xFF4500, radius: 0.4 },
+        'F': { valence: 7, color: 0x32CD32, radius: 0.4 },
+        'Ne': { valence: 0, color: 0xFF69B4, radius: 0.4 },
         'Na': { valence: 1, color: 0x0000FF, radius: 0.5 },
         'Mg': { valence: 2, color: 0x32CD32, radius: 0.5 },
         'Al': { valence: 3, color: 0x808080, radius: 0.5 },
@@ -411,46 +477,6 @@
         'Br': { valence: 7, color: 0xA52A2A, radius: 0.4 },
         'Kr': { valence: 0, color: 0xFFFFC0, radius: 0.4 }
     };
-
-    const arModeBtn = document.getElementById('ar-mode-btn');
-        const arMode = document.getElementById('ar-mode');
-        const periodicTable = document.getElementById('periodic-table');
-
-        let isARModeActive = false;
-
-        arModeBtn.addEventListener('click', () => {
-            isARModeActive = !isARModeActive;
-            
-            if (isARModeActive) {
-                // Turn on camera for AR mode
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                        .then(function(stream) {
-                            arMode.innerHTML = '<video autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>';
-                            const video = arMode.querySelector('video');
-                            video.srcObject = stream;
-                        })
-                        .catch(function(err) {
-                            console.log("Error accessing camera: " + err);
-                        });
-                }
-                arModeBtn.textContent = 'Exit AR';
-                // Keep periodic table visible
-                periodicTable.style.display = 'block';
-            } else {
-                // Exit AR mode
-                const video = arMode.querySelector('video');
-                if (video) {
-                    const stream = video.srcObject;
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                }
-                arMode.innerHTML = '';
-                arModeBtn.textContent = 'AR Mode';
-                periodicTable.style.display = 'block';
-            }
-        })
-
 
 
     // Scene setup
@@ -480,7 +506,7 @@ const planeMaterial = new THREE.MeshStandardMaterial({
 const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
 
 groundPlane.rotation.x = -Math.PI / 2; // Horizontal alignment
-groundPlane.position.y = -1; // Slightly below the main objects
+groundPlane.position.y = -2.5; // Slightly below the main objects
 groundPlane.receiveShadow = true;
 scene.add(groundPlane);
 
@@ -510,7 +536,7 @@ directionalLight.shadow.camera.far = 50;         // Shadow camera far plane
 scene.add(directionalLight);
 
 const pointLight = new THREE.PointLight(0xfff0dd, 0.8, 50); // Warm point light
-pointLight.position.set(-5, 5, -5);
+pointLight.position.set(0, 2, 8);
 scene.add(pointLight);
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -579,6 +605,46 @@ scene.add(pointLight);
     emissive: new THREE.Color(0x222222), // Soft glow effect
     emissiveIntensity: 0.4,   // Set higher for specific elements if needed
 });
+
+function createMolecule() {
+    const compound = findValidCompound(selectedAtoms);
+    
+    if (!compound) {
+        showMessage('Invalid combination of atoms!', true);
+        return;
+    }
+
+    bonds.forEach(bond => scene.remove(bond));
+    bonds = [];
+
+    selectedAtoms.forEach((atom, index) => {
+        atom.position.copy(compound.positions[index]);
+    });
+
+    compound.bonds.forEach(bondInfo => {
+        const bond = createBond(
+            selectedAtoms[bondInfo.from],
+            selectedAtoms[bondInfo.to],
+            bondInfo.pairs
+        );
+        bonds.push(bond);
+    });
+
+    showMessage(`Created ${Object.keys(validCompounds).find(key => validCompounds[key] === compound)}`);
+
+    // Dynamically create "See Info" button
+    const infoButton = document.createElement('button');
+    infoButton.textContent = 'See Info';
+    infoButton.className = 'button';
+    infoButton.style.marginTop = '10px';
+    infoButton.addEventListener('click', () => {
+        window.open(compound.wikiLink, '_blank');
+    });
+
+    const messageBox = document.getElementById('message');
+    messageBox.appendChild(infoButton);
+}
+
         
         const atom = new THREE.Mesh(geometry, material);
         atom.position.copy(position);
@@ -700,12 +766,19 @@ scene.add(pointLight);
 
 
     function showMessage(text, isError = false) {
-      const messageEl = document.getElementById('message');
-      messageEl.style.display = 'block';
-      messageEl.style.background = isError ? 'rgba(255, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)';
-      messageEl.style.color = isError ? 'white' : 'black';
-      messageEl.textContent = text;
+    const messageEl = document.getElementById('message');
+    messageEl.style.display = 'block';
+    messageEl.style.background = isError ? 'rgba(255, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+    messageEl.style.color = isError ? 'white' : 'black';
+    messageEl.textContent = text;
+
+    // Remove any existing buttons in the message box
+    const existingButton = messageEl.querySelector('button');
+    if (existingButton) {
+        existingButton.remove();
     }
+}
+
 
     function findValidCompound(atoms) {
       const atomSymbols = atoms.map(atom => atom.userData.element);
@@ -781,6 +854,96 @@ scene.add(pointLight);
         showMessage(`Created ${Object.keys(validCompounds).find(key => validCompounds[key] === compound)}`);
     }
 
+    function renderPeriodicTableButtonsAR() {
+    console.log("Rendering periodic table in AR mode...");
+
+    // Create a group for periodic table elements
+    const periodicTableGroup = new THREE.Group();
+    periodicTableGroup.userData.isDynamic = true; // Mark for dynamic cleanup if needed
+
+    // Define elements and positions
+    const elements = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne'];
+    const rowSpacing = 1.5; // Vertical spacing
+    const colSpacing = 1.5; // Horizontal spacing
+    let xStart = -3; // Start x-coordinate
+    let yStart = 2;  // Start y-coordinate
+    const zPosition = -3; // Fixed depth in AR mode
+
+    elements.forEach((element, index) => {
+        const x = xStart + (index % 5) * colSpacing; // 5 elements per row
+        const y = yStart - Math.floor(index / 5) * rowSpacing;
+
+        // Create a 3D button-like plane for each element
+        const geometry = new THREE.PlaneGeometry(1, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x555555,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.8,
+        });
+        const button = new THREE.Mesh(geometry, material);
+        button.position.set(x, y, zPosition);
+        button.userData.element = element;
+
+        // Add a label for the element
+        const labelDiv = document.createElement('div');
+        labelDiv.textContent = element;
+        labelDiv.style.color = 'white';
+        labelDiv.style.fontSize = '14px';
+        labelDiv.style.textAlign = 'center';
+        labelDiv.style.padding = '4px';
+        labelDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        labelDiv.style.borderRadius = '4px';
+
+        const label = new CSS2DObject(labelDiv);
+        label.position.set(0, 0, 0.1); // Position above the button
+        button.add(label);
+
+        // Add click functionality
+        button.callback = () => {
+            console.log(`Element clicked: ${element}`);
+            const atom = createAtom(element, new THREE.Vector3(0, 0, zPosition));
+            selectedAtoms.push(atom);
+        };
+
+        // Add to periodic table group
+        periodicTableGroup.add(button);
+    });
+
+    // Add group to the AR scene
+    scene.add(periodicTableGroup);
+
+    // Add raycasting for button interaction
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function onClick(event) {
+        // Convert mouse position to normalized device coordinates (-1 to +1)
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // Cast ray from the camera
+        raycaster.setFromCamera(mouse, camera);
+
+        // Check intersections with buttons
+        const intersects = raycaster.intersectObjects(periodicTableGroup.children);
+        if (intersects.length > 0) {
+            const object = intersects[0].object;
+            if (object.callback) {
+                object.callback();
+            }
+        }
+    }
+
+    // Attach click listener
+    scene.add(periodicTableGroup);
+    window.addEventListener('click', onClick);
+    console.log("Periodic table buttons rendered in AR scene.");
+}
+
+
+
+
     // Event Listeners
     document.querySelectorAll('.periodic-table-element').forEach(element => {
       element.addEventListener('click', (event) => {
@@ -795,10 +958,32 @@ scene.add(pointLight);
         }
       });
     });
+    document.getElementById('arButton').addEventListener('click', () => {
+    if (navigator.xr) {
+        navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['hit-test']
+        }).then((session) => {
+            console.log("AR session started");
+            xrSession = session;
+            renderer.xr.enabled = true;
+            renderer.xr.setReferenceSpaceType('local');
+            renderer.xr.setSession(session);
+
+            // Render periodic table
+            renderPeriodicTableAR();
+
+            // Start AR animation loop
+            animateAR();
+        }).catch((error) => {
+            console.error("Error starting AR session", error);
+        });
+    } else {
+        alert("AR not supported on this device.");
+    }
+});
 
     document.getElementById('bondButton').addEventListener('click', createMolecule);
     document.getElementById('clearButton').addEventListener('click', clearScene);
-
 
     let xrSession = null;
 
@@ -807,120 +992,37 @@ scene.add(pointLight);
         navigator.xr.requestSession('immersive-ar', {
             requiredFeatures: ['hit-test']
         }).then((session) => {
+            console.log("AR session started");
             xrSession = session;
             renderer.xr.enabled = true;
             renderer.xr.setReferenceSpaceType('local');
             renderer.xr.setSession(session);
 
-            // Keep periodic table visible in AR mode
-            const periodicTable = document.getElementById('periodic-table');
-            periodicTable.style.position = 'fixed';
-            periodicTable.style.zIndex = '1000';
-            periodicTable.style.left = '20px';
-            periodicTable.style.bottom = '20px';
-            periodicTable.style.display = 'block';
+            // Render the periodic table in AR
+            renderPeriodicTableAR();
 
-            // Start AR rendering loop
+            // Start AR animation loop
             animateAR();
-        }).catch(console.error);
+        }).catch((error) => {
+            console.error("Error starting AR session", error);
+        });
     } else {
         alert("AR not supported on this device.");
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('camera-background');
-
-            // Request camera access
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                })
-                .catch(error => {
-                    console.error('Camera access denied:', error);
-                    alert('Camera access is required for AR experience');
-                });
-        });
-
-function ensurePeriodicTableVisibility() {
-    const periodicTable = document.getElementById('periodic-table');
-    periodicTable.style.position = 'fixed';
-    periodicTable.style.zIndex = '1000';
-    periodicTable.style.left = '20px';
-    periodicTable.style.bottom = '20px';
-    periodicTable.style.display = 'block';
-}
-
-// Ensure periodic table is always visible on page load and during AR sessions
-ensurePeriodicTableVisibility();
-
-function arElementClickHandler(event) {
-    const elementSymbol = event.target.dataset.element;
-    if (elementSymbol) {
-        // In AR mode, place atoms at a fixed distance in front of the camera
-        const atomPosition = new THREE.Vector3(0, 0, -3).applyQuaternion(camera.quaternion);
-        const atom = createAtom(elementSymbol, atomPosition);
-        selectedAtoms.push(atom);
-    }
-}
-
-document.getElementById('togglePeriodicTable').addEventListener('click', () => {
-    const periodicTable = document.getElementById('periodic-table');
-    periodicTable.style.display =
-        periodicTable.style.display === 'none' ? 'block' : 'none';
-});
-
-
 function animateAR() {
     renderer.setAnimationLoop(() => {
-        controls.update();
         renderer.render(scene, camera);
-        labelRenderer.render(scene, camera);
     });
 }
 
-// End AR session handling
+// Optional: End AR session
 if (xrSession) {
     xrSession.addEventListener('end', () => {
         renderer.xr.enabled = false;
-
-        // Restore background and ground
-        scene.background = new THREE.Color(0x87CEEB);
-        scene.add(groundPlane);
-
-        // Hide the toggle button and show the periodic table
-        document.getElementById('togglePeriodicTable').style.display = 'none';
-        document.getElementById('periodic-table').style.display = 'block';
     });
 }
-
-document.addEventListener('xrsessionend', (event) => {
-    const periodicTable = document.getElementById('periodic-table');
-    periodicTable.style.position = 'absolute';
-    periodicTable.style.zIndex = '1000';
-    periodicTable.style.display = 'block';
-
-    // Remove the AR-specific click handler
-    document.querySelectorAll('.periodic-table-element').forEach(element => {
-        element.removeEventListener('click', arElementClickHandler);
-    });
-
-    // Restore original renderer settings
-    renderer.xr.enabled = false;
-});
-
-function ensurePeriodicTableVisibility() {
-    const periodicTable = document.getElementById('periodic-table');
-    periodicTable.style.position = 'fixed';
-    periodicTable.style.zIndex = '1000';
-    periodicTable.style.left = '20px';
-    periodicTable.style.bottom = '20px';
-    periodicTable.style.display = 'block';
-}
-
-// Call this function when the page loads
-ensurePeriodicTableVisibility();
-
 
 
     // Update window resize handler to include label renderer
